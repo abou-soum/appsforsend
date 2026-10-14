@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockFacile - Gestion de Stock & Ventes Téléphonie</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- En-tête de l'application -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="2" width="14" height="20" rx="3"></rect>
+                        <line x1="12" y1="18" x2="12" y2="18.01" stroke-linecap="round" stroke-width="3"></line>
+                        <path d="M9 6h6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">Stock<span>Facile</span></h1>
+                    <p class="brand-subtitle">Téléphones & Accessoires</p>
+                </div>
+            </div>
+
+            <!-- Navigation Principale -->
+            <nav class="main-nav">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                        <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                        <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+                    </svg>
+                    <span>Tableau de bord</span>
+                </button>
+                <button class="nav-btn" data-tab="sales">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span>Nouvelle Vente</span>
+                </button>
+                <button class="nav-btn" data-tab="products">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    <span>Stock & Produits</span>
+                </button>
+                <button class="nav-btn" data-tab="history">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Historique</span>
+                </button>
+            </nav>
+
+            <!-- Actions Rapides -->
+            <div class="header-actions">
+                <button class="btn btn-primary" id="open-new-sale-quick">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Vendre</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Corps Principal de l'Application -->
+    <main class="main-content">
+        <div class="content-container">
+
+            <!-- ================= ONGLET 1 : TABLEAU DE BORD ================= -->
+            <section id="tab-dashboard" class="tab-pane active">
+                <div class="pane-header">
+                    <div>
+                        <h2>Tableau de bord</h2>
+                        <p class="subtitle">Aperçu en temps réel de votre activité commerciale</p>
+                    </div>
+                    <div class="date-badge" id="current-date-badge">
+                        <!-- Date du jour insérée par JS -->
+                    </div>
+                </div>
+
+                <!-- Alertes de stock faible (Bannière conditionnelle) -->
+                <div id="dashboard-stock-alerts" class="alert-container hidden">
+                    <div class="alert-box alert-warning">
+                        <div class="alert-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="alert-content">
+                            <h4>Alerte de Stock Faible ou Épuisé !</h4>
+                            <p id="alert-summary-text">Certains produits nécessitent un réapprovisionnement immédiat.</p>
+                            <div class="alert-items" id="alert-items-list">
+                                <!-- Éléments en stock critique ajoutés par JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartes d'indicateurs clés (KPIs) -->
+                <div class="stats-grid">
+                    <div class="stat-card card-sales">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Ventes du jour</span>
+                            <h3 class="stat-value" id="kpi-today-sales">0 FCFA</h3>
+                            <span class="stat-subtext" id="kpi-today-count">0 vente aujourd'hui</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-profit">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Bénéfice du jour</span>
+                            <h3 class="stat-value" id="kpi-today-profit">0 FCFA</h3>
+                            <span class="stat-subtext">Marge brute du jour</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-products">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Produits</span>
+                            <h3 class="stat-value" id="kpi-total-products">0</h3>
+                            <span class="stat-subtext" id="kpi-total-units">0 articles en stock</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-stock-value">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Valeur du stock</span>
+                            <h3 class="stat-value" id="kpi-stock-value">0 FCFA</h3>
+                            <span class="stat-subtext">Au prix d'achat</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ligne secondaire : Ventes récentes & Accès rapides -->
+                <div class="dashboard-columns">
+                    <div class="card recent-sales-card">
+                        <div class="card-header">
+                            <h3>Dernières ventes enregistrées</h3>
+                            <button class="btn btn-text" onclick="switchTab('history')">Tout voir &rarr;</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Heure</th>
+                                            <th>Produit</th>
+                                            <th>Qté</th>
+                                            <th>Montant</th>
+                                            <th>Bénéfice</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-sales-tbody">
+                                        <!-- Rempli par JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="recent-sales-empty" class="empty-state">
+                                <p>Aucune vente enregistrée pour le moment.</p>
+                                <button class="btn btn-sm btn-primary" onclick="switchTab('sales')">Enregistrer la 1ère vente</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card quick-actions-card">
+                        <div class="card-header">
+                            <h3>Actions rapides</h3>
+                        </div>
+                        <div class="card-body quick-actions-body">
+                            <button class="action-tile" onclick="openAddProductModal()">
+                                <div class="tile-icon bg-indigo">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <div class="tile-text">
+                                    <strong>Nouveau Produit</strong>
+                                    <span>Ajouter au catalogue</span>
+                                </div>
+                            </button>
+
+                            <button class="action-tile" onclick="switchTab('sales')">
+                                <div class="tile-icon bg-emerald">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"></circle>
+                                        <circle cx="20" cy="21" r="1"></circle>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                </div>
+                                <div class="tile-text">
+                                    <strong>Encaisser une Vente</strong>
+                                    <span>Mettre à jour le stock</span>
+                                </div>
+                            </button>
+
+                            <button class="action-tile" onclick="switchTab('products')">
+                                <div class="tile-icon bg-amber">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                    </svg>
+                                </div>
+                                <div class="tile-text">
+                                    <strong>Gérer les Stocks</strong>
+                                    <span>Vérifier les quantités</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= ONGLET 2 : NOUVELLE VENTE ================= -->
+            <section id="tab-sales" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2>Enregistrer une Vente</h2>
+                        <p class="subtitle">Sélectionnez le produit vendu. Le stock sera automatiquement déduit.</p>
+                    </div>
+                </div>
+
+                <div class="sale-container-grid">
+                    <!-- Formulaire de vente -->
+                    <div class="card sale-form-card">
+                        <div class="card-body">
+                            <form id="sale-form">
+                                <div class="form-group">
+                                    <label for="sale-product-select">Sélectionner le produit *</label>
+                                    <select id="sale-product-select" class="form-control form-control-lg" required>
+                                        <option value="">-- Choisir un produit en stock --</option>
+                                    </select>
+                                    <small class="form-help">Seuls les produits avec du stock disponible peuvent être vendus.</small>
+                                </div>
+
+                                <!-- Aperçu Produit sélectionné -->
+                                <div id="sale-product-preview" class="product-preview-box hidden">
+                                    <div class="preview-item">
+                                        <span class="preview-label">Catégorie :</span>
+                                        <span class="preview-value" id="preview-category">-</span>
+                                    </div>
+                                    <div class="preview-item">
+                                        <span class="preview-label">Stock disponible :</span>
+                                        <span class="preview-value font-bold" id="preview-stock">-</span>
+                                    </div>
+                                    <div class="preview-item">
+                                        <span class="preview-label">Prix unitaire :</span>
+                                        <span class="preview-value text-emerald font-bold" id="preview-unit-price">-</span>
+                                    </div>
+                                    <div class="preview-item">
+                                        <span class="preview-label">Marge unitaire :</span>
+                                        <span class="preview-value text-blue" id="preview-unit-profit">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="sale-quantity">Quantité à vendre *</label>
+                                        <div class="stepper-input">
+                                            <button type="button" class="stepper-btn" id="qty-minus">-</button>
+                                            <input type="number" id="sale-quantity" class="form-control text-center" min="1" value="1" required>
+                                            <button type="button" class="stepper-btn" id="qty-plus">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="sale-custom-price">Prix de vente unitaire (FCFA)</label>
+                                        <input type="number" id="sale-custom-price" class="form-control" min="0" step="100">
+                                        <small class="form-help">Modifiable en cas de remise</small>
+                                    </div>
+                                </div>
+
+                                <!-- Récapitulatif Total & Bénéfice de cette vente -->
+                                <div class="sale-summary-card">
+                                    <div class="summary-line">
+                                        <span>Total à payer par le client :</span>
+                                        <strong class="summary-total" id="summary-total-price">0 FCFA</strong>
+                                    </div>
+                                    <div class="summary-line text-sm text-muted">
+                                        <span>Bénéfice estimé pour cette vente :</span>
+                                        <span id="summary-total-profit" class="font-bold text-emerald">0 FCFA</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-validate-sale">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span>Valider et Encaisser la vente</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Guide d'aide pour débutant -->
+                    <div class="card help-card">
+                        <div class="card-header">
+                            <h3>Comment ça marche ?</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="help-steps">
+                                <li>
+                                    <span class="step-num">1</span>
+                                    <div>
+                                        <strong>Choisissez le produit</strong>
+                                        <p>La liste affiche la quantité disponible et le prix normal de vente.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="step-num">2</span>
+                                    <div>
+                                        <strong>Indiquez la quantité</strong>
+                                        <p>L'application vérifie automatiquement que vous ne vendez pas plus que votre stock réel.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="step-num">3</span>
+                                    <div>
+                                        <strong>Validation instantanée</strong>
+                                        <p>Le stock diminue immédiatement, et le chiffre d'affaires ainsi que le bénéfice sont calculés et enregistrés.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= ONGLET 3 : PRODUITS & STOCK ================= -->
+            <section id="tab-products" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2>Gestion des Produits & Stock</h2>
+                        <p class="subtitle">Ajoutez, modifiez ou réapprovisionnez votre catalogue</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddProductModal()">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Ajouter un Produit</span>
+                    </button>
+                </div>
+
+                <!-- Filtres et Recherche -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="product-search" placeholder="Rechercher un modèle de téléphone, chargeur, écouteur...">
+                    </div>
+
+                    <div class="filter-group">
+                        <select id="product-filter-category" class="form-control">
+                            <option value="ALL">Toutes les catégories</option>
+                            <option value="Téléphones">Téléphones</option>
+                            <option value="Chargeurs & Câbles">Chargeurs & Câbles</option>
+                            <option value="Écouteurs & Audio">Écouteurs & Audio</option>
+                            <option value="Coques & Protections">Coques & Protections</option>
+                            <option value="Batteries & Powerbanks">Batteries & Powerbanks</option>
+                            <option value="Autres Accessoires">Autres Accessoires</option>
+                        </select>
+
+                        <select id="product-filter-stock" class="form-control">
+                            <option value="ALL">Tous les états de stock</option>
+                            <option value="ALERT">Stock faible uniquement</option>
+                            <option value="OUT">Rupture de stock (0)</option>
+                            <option value="IN_STOCK">En stock normal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tableau de la liste des produits -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="data-table" id="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom du Produit</th>
+                                        <th>Catégorie</th>
+                                        <th>Prix Achat</th>
+                                        <th>Prix Vente</th>
+                                        <th>Bénéfice Prévu</th>
+                                        <th>Stock Actuel</th>
+                                        <th>Statut</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-tbody">
+                                    <!-- Rempli par JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="products-empty" class="empty-state">
+                            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                            <p>Aucun produit dans le catalogue.</p>
+                            <button class="btn btn-primary" onclick="openAddProductModal()">Ajouter mon premier produit</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= ONGLET 4 : HISTORIQUE DES VENTES ================= -->
+            <section id="tab-history" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2>Historique des Ventes</h2>
+                        <p class="subtitle">Consultez toutes les transactions réalisées et les bénéfices nets</p>
+                    </div>
+                    <div class="header-actions-group">
+                        <button class="btn btn-outline" id="btn-export-csv" title="Télécharger un tableau Excel/CSV">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>Exporter Excel / CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Résumé chiffré de l'historique filtré -->
+                <div class="history-summary-bar">
+                    <div class="history-summary-item">
+                        <span class="label">Ventes enregistrées :</span>
+                        <strong class="value" id="history-count">0</strong>
+                    </div>
+                    <div class="history-summary-item">
+                        <span class="label">Chiffre d'affaires cumulé :</span>
+                        <strong class="value text-blue" id="history-total-ca">0 FCFA</strong>
+                    </div>
+                    <div class="history-summary-item">
+                        <span class="label">Bénéfice brut total :</span>
+                        <strong class="value text-emerald" id="history-total-profit">0 FCFA</strong>
+                    </div>
+                </div>
+
+                <!-- Filtres Historique -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="history-search" placeholder="Filtrer par nom de produit...">
+                    </div>
+
+                    <div class="filter-group">
+                        <select id="history-filter-period" class="form-control">
+                            <option value="ALL">Toutes les dates</option>
+                            <option value="TODAY">Aujourd'hui</option>
+                            <option value="WEEK">Les 7 derniers jours</option>
+                            <option value="MONTH">Ce mois-ci</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tableau de l'historique -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="data-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Heure</th>
+                                        <th>Produit</th>
+                                        <th>Catégorie</th>
+                                        <th>Prix Unitaire</th>
+                                        <th>Quantité</th>
+                                        <th>Total Encaissé</th>
+                                        <th>Bénéfice Brut</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-tbody">
+                                    <!-- Rempli par JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="history-empty" class="empty-state">
+                            <p>Aucune transaction enregistrée pour ces critères.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Navigation Mobile Fixe en Bas -->
+    <nav class="mobile-bottom-nav">
+        <button class="mobile-nav-btn active" data-tab="dashboard">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+            <span>Accueil</span>
+        </button>
+        <button class="mobile-nav-btn" data-tab="sales">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span>Vente</span>
+        </button>
+        <button class="mobile-nav-btn" data-tab="products">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            <span>Stock</span>
+        </button>
+        <button class="mobile-nav-btn" data-tab="history">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Historique</span>
+        </button>
+    </nav>
+
+    <!-- ================= MODAL : AJOUTER / MODIFIER UN PRODUIT ================= -->
+    <div class="modal-backdrop" id="product-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="modal-product-title">Ajouter un nouveau produit</h3>
+                <button type="button" class="btn-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="product-form">
+                <div class="modal-body">
+                    <input type="hidden" id="product-id">
+
+                    <div class="form-group">
+                        <label for="product-name">Nom du produit *</label>
+                        <input type="text" id="product-name" class="form-control" placeholder="ex: iPhone 11 128Go ou Chargeur 20W USB-C" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-category">Catégorie *</label>
+                        <select id="product-category" class="form-control" required>
+                            <option value="">-- Choisir une catégorie --</option>
+                            <option value="Téléphones">Téléphones</option>
+                            <option value="Chargeurs & Câbles">Chargeurs & Câbles</option>
+                            <option value="Écouteurs & Audio">Écouteurs & Audio</option>
+                            <option value="Coques & Protections">Coques & Protections</option>
+                            <option value="Batteries & Powerbanks">Batteries & Powerbanks</option>
+                            <option value="Autres Accessoires">Autres Accessoires</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-buy-price">Prix d'achat (FCFA) *</label>
+                            <input type="number" id="product-buy-price" class="form-control" min="0" step="50" placeholder="ex: 85000" required>
+                            <small class="form-help">Ce que vous avez payé au fournisseur</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-sell-price">Prix de vente (FCFA) *</label>
+                            <input type="number" id="product-sell-price" class="form-control" min="0" step="50" placeholder="ex: 110000" required>
+                            <small class="form-help">Prix proposé aux clients</small>
+                        </div>
+                    </div>
+
+                    <!-- Marge prévisionnelle en direct -->
+                    <div class="margin-indicator" id="margin-calc-box">
+                        <span>Bénéfice estimé par article :</span>
+                        <strong id="margin-calc-value">0 FCFA</strong>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-quantity">Quantité en stock *</label>
+                            <input type="number" id="product-quantity" class="form-control" min="0" placeholder="ex: 5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-min-stock">Seuil d'alerte stock *</label>
+                            <input type="number" id="product-min-stock" class="form-control" min="1" value="3" required>
+                            <small class="form-help">Alerte si stock &le; cette valeur</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-product">Enregistrer le produit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL : RÉAPPROVISIONNEMENT RAPIDE ================= -->
+    <div class="modal-backdrop" id="restock-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-header">
+                <h3>Réapprovisionner le stock</h3>
+                <button type="button" class="btn-close" onclick="closeRestockModal()">&times;</button>
+            </div>
+            <form id="restock-form">
+                <div class="modal-body">
+                    <input type="hidden" id="restock-product-id">
+                    <p id="restock-product-name" class="font-bold mb-3">-</p>
+                    <div class="form-group">
+                        <label for="restock-qty">Quantité à ajouter au stock *</label>
+                        <input type="number" id="restock-qty" class="form-control" min="1" value="5" required>
+                        <small class="form-help">Cette quantité sera ajoutée au stock existant.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeRestockModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter au stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL : REÇU / TICKET DE VENTE ================= -->
+    <div class="modal-backdrop" id="receipt-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-header">
+                <h3>Reçu de Vente</h3>
+                <button type="button" class="btn-close" onclick="closeReceiptModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="receipt-paper" id="receipt-content">
+                    <div class="receipt-header">
+                        <h4>StockFacile</h4>
+                        <p>Commerce Téléphonie & Accessoires</p>
+                        <p class="receipt-date" id="receipt-date">-</p>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-line">
+                        <span>Article :</span>
+                        <strong id="receipt-item-name">-</strong>
+                    </div>
+                    <div class="receipt-line">
+                        <span>Prix unitaire :</span>
+                        <span id="receipt-unit-price">-</span>
+                    </div>
+                    <div class="receipt-line">
+                        <span>Quantité :</span>
+                        <span id="receipt-qty">-</span>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-line receipt-total">
+                        <strong>TOTAL PAYÉ :</strong>
+                        <strong id="receipt-total-amount">-</strong>
+                    </div>
+                    <div class="receipt-footer">
+                        <p>Merci pour votre achat !</p>
+                        <p>À bientôt.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeReceiptModal()">Fermer</button>
+                <button type="button" class="btn btn-primary" onclick="printReceipt()">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Imprimer le reçu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Flottante -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
